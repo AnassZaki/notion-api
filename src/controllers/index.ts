@@ -42,13 +42,15 @@ export const insertPage = async (req: Request) => {
     database_id,
   });
 
-  const { id, name } = filter(database.properties, "title");
+  const {
+    title: { name, id },
+  } = filter(database.properties, ["title"]);
 
   const response = await Notion.pages.create({
     parent: { database_id },
     properties: {
       [name]: {
-        id: id,
+        id,
         type: "title",
         title: [
           {

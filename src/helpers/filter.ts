@@ -2,26 +2,32 @@ type Query = {
   [propertyName: string]: { type: any; id: string; [key: string]: any };
 };
 
-type Filter = (
-  query: Query,
-  type: string
-) =>
-  | {
-      name: string;
-      id: string;
-    }
-  | any;
+type FilterResult = {
+  [type: string]: {
+    name: string;
+    id: string;
+  };
+};
 
-export const filter: Filter = (query, type) => {
+type Filter = (query: Query, types: string[]) => FilterResult;
+
+export const filter: Filter = (query, types) => {
   const keys = Object.keys(query);
 
-  for (let i = 0; i < keys.length; i++) {
-    if (query[keys[i]].type === type) {
-      return { name: keys[i], id: query[keys[i]].id };
-    }
-  }
+  let results: FilterResult = {};
 
-  return query;
+  types.forEach((el: string) => {
+    for (let i = 0; i < keys.length; i++) {
+      if (query[keys[i]].type === el) {
+        return (results[query[keys[i]].type] = {
+          name: keys[i],
+          id: query[keys[i]].id,
+        });
+      }
+    }
+  });
+
+  return results;
 };
 
 export default filter;

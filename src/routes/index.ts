@@ -1,4 +1,6 @@
 import { getDatabaseById, getDatabasePages, insertPage } from "../controllers";
+import { postAssignedPerson } from "../controllers/slack";
+
 import { failAction } from "../lib/logError";
 import Joi from "joi";
 
@@ -46,6 +48,22 @@ export default [
           database_id: Joi.string().required(),
           page_title: Joi.string().required(),
           status: Joi.string(),
+        }),
+      },
+    },
+  },
+  {
+    method: "POST",
+    path: "/slack-notion/oncall/{id}",
+    handler: postAssignedPerson,
+    options: {
+      description:
+        "Post Slack Message Notifying On-Call Person in Notion's Timeline Database",
+      tags: ["api"],
+      validate: {
+        failAction,
+        params: Joi.object({
+          id: Joi.string().required(),
         }),
       },
     },
